@@ -49,6 +49,13 @@ jobs:
       run: ./copy_mock_google_services_json.sh
     - name: Run tests
       run: ./gradlew appmap test
+    # Begin AppMap bootstrap archive step
+    - name: Archive AppMaps
+      id: appmap-bootstrap-archive-appmaps
+      uses: getappmap/archive-action@v1
+      with:
+        revision: ${{ github.event.pull_request.base.sha }}
+    # End AppMap bootstrap archive step
     - name: Build with Gradle (Pull Request)
       run: ./build_pull_request.sh
       if: github.event_name == 'pull_request'
