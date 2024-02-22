@@ -23,9 +23,24 @@ jobs:
       run: ./copy_mock_google_services_json.sh
     - name: Run tests
       run: ./gradlew appmap test
+    - name: Save AppMaps
+      uses: actions/cache/save@v3
+      if: always()
+      with:
+        path: ./tmp/appmap
+        key: appmaps-${{ github.sha }}-${{ github.run_attempt }}
     - name: Build with Gradle (Pull Request)
       run: ./build_pull_request.sh
       if: github.event_name == 'pull_request'
     - name: Build with Gradle (Push)
       run: ./gradlew clean ktlint build
       if: github.event_name != 'pull_request'
+  appmap-analysis:
+    if: always()
+    needs: [ build ]
+    uses: getappmap/analyze-action/.github/workflows/appmap-analysis.yml@v1
+    permissions:
+      actions: read
+      contents: read
+      checks: write
+      pull-requests: write
